@@ -1,0 +1,68 @@
+﻿@model TaskApp
+
+@{
+    var timeLeft = Model.ExpiredDate - DateTime.Now;
+    var isShowTimeLeft = timeLeft <= TimeSpan.FromHours(4) && timeLeft.TotalSeconds > 0;
+}
+
+@functions{
+    string timeLeftToFromat( TimeSpan timeLeft)
+    {
+        return $"{timeLeft.Hours}ч. {timeLeft.Minutes}м.";
+    }
+}
+<div class="tasks shadow-sm p-3 bg-body-tertiary rounded d-flex justify-content-between align-items-center" data-id="@Model.Id">
+    <div class="form-check d-flex align-items-center">
+        <form asp-controller="Home" asp-action="UpdateCompleted" name="updateCompletedForm">
+            @Html.HiddenFor(m => m.Id)
+            <input
+                onclick="document.updateCompletedForm.submit()"
+                class="form-check-input me-5"
+                style="height: 25px; width: 25px;"
+                type="checkbox"
+                asp-for="IsCompleted"
+                id="IsCompleted-@Model.Id" />
+        </form>
+        <form asp-controller="Home" asp-action="UpdateName">
+            <div class="editable-group d-flex align-items-center d-none">
+                @Html.HiddenFor(m => m.Id)
+                <input type="text" class="form-control" asp-for="Name" id="@Model.Id">
+                <div class="btn-group btn-group ms-2" role="group">
+                    <button type="submit" class="btn btn-outline-success case" data-bs-title="Сохранить" data-bs-toggle="tooltip">
+                        <i class="fa-solid fa-check"></i>
+                    </button>
+                    <button type="button" class="btn btn-online-danger cancle" data-bs-title="Отмена" data-bs-toggle="tooltip">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        <label class="form-check-label" asp-for="IsCompleted" for="IsCompleted-@Model.Id">@Model.Name</label>
+        <span class="badge text-bg-warning ms-lg-5 @(!isShowTimeLeft ? "d-none" : "")" data-bs-title="Осталось" data-bs-toggle="tooltip">
+            <i class="fa-solid fa-hourglass-half me-2"></i> @timeLeftToFromat(timeLeft)
+        </span>
+    </div>
+    <div>
+        <div class="d-flex align-items-center">
+            <button class="btn text-secondary edit" data-bs-title="Редактировать" data-bs-toggle="tooltip">
+                <i class="fa-solid fa pencil"></i>
+            </button>
+
+            <form asp-controller="Home" asp-action="Delete">
+                @Html.HiddenFor(m => m.Id)
+                <button type="submit" class="btn text-danger" data-bs-title="Удалить" data-bs-toggle="tooltip">
+                    <i class="fa-solid fa-trash-can"></i>
+                </button>
+            </form>
+        </div>
+        <div
+            data-bs-placement="botton"
+            data-bs-title="@Model.ExpiredDate"
+            data-bs-toggle="tooltip"
+            class="text-secondary d-flex align-items-center"
+        >
+            <i class="fa-solid fa-clock me-2"></i> @Model.ExpiredDate.ToString("dd.MM.yyyy")
+        </div>
+    </div>
+</div>
