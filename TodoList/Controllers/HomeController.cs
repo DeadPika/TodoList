@@ -34,14 +34,14 @@ namespace TodoList.Controllers
                 return View("Index", model);
             }
 
-            var task = await _context.Tasks.FirstOrDefault(t => t.Name.ToLower() == model.TaskName.ToLower()
+            var task = _context.Tasks.FirstOrDefault(t => t.Name.ToLower() == model.TaskName.ToLower()
             && t.UserId == CurrentUserId
             && t.ExpiredDate == model.DateTime);
 
             if(task != null)
             {
                 model.Tasks = await GetTasksCurrentUserAsync();
-                ViewBag.Error = "такая задача уже существует!";
+                ViewBag.Error = "Данная задача уже существует!";
 
                 return View("Index", model);
             }
@@ -49,7 +49,7 @@ namespace TodoList.Controllers
             await _context.Tasks.AddAsync(new Domain.Entities.TaskApp
             {
                 Name = model.TaskName,
-                ExpiredDate = model.DateTime.Value,
+                ExpiredDate = model.DateTime,
                 UserId = CurrentUserId
             });
 
@@ -62,7 +62,7 @@ namespace TodoList.Controllers
             var task = await _context.Tasks.FirstOrDefaultAsync(t => t.Id == id);
             if(task != null)
             {
-                task.IsCompleted = isCompleted;
+                task.IsCompleted = true;
                 _context.Tasks.Update(task);
                 await _context.SaveChangesAsync();
             }
@@ -72,14 +72,14 @@ namespace TodoList.Controllers
 
         public async Task<IActionResult> UpdateName(int id, string name)
         {
-            var task = await _context.Tasks.FirstOrDefault(t => t.Id == id);
+            var task = _context.Tasks.FirstOrDefault(t => t.Id == id);
             if(task != null)
             {
                 if(task.Name != name)
                 {
                     task.Name = name;
                     _context.Tasks.Update(task);
-                    _context.SaveChangesAsync();
+                    await _context.SaveChangesAsync();
                 }
             }
 

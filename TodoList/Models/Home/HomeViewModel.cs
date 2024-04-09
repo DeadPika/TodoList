@@ -9,7 +9,7 @@ namespace TodoList.Mvc.Models.Home
         public string TaskName { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Данное поле обязательно!")]
-        public DateTime? DateTime { get; set; }
+        public DateTime DateTime { get; set; }
         public IEnumerable<TaskApp>? Tasks { get; set; }
     }
 }
